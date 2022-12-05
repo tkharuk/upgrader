@@ -7,14 +7,13 @@ import {
   prepareBranch,
   updatePackage,
   pushUpdates,
-  createPR,
 } from "./utils.mjs";
 
 const config = {
-  appName: "owners-reports",
-  depName: "@guestyci/coverager",
-  depVersion: "1.0.21-alpha.16",
-  onAfterPR: () => $`yarn deployci --testOnly --cluster=staging8`,
+  appName: "",
+  depName: "",
+  depVersion: "",
+  onAfterPR: () => $`yarn deployci --testOnly --cluster=production`,
 };
 
 // MAIN
@@ -105,4 +104,32 @@ Status: ${chalk.green("PR created")}
   } catch (error) {
     console.error(error);
   }
+}
+
+export async function createPR({ depName, depVersion }) {
+  const prTemplatePath = ".github/pull_request_template.md";
+
+  // create PR with title and body
+  const prTitle = `Upgrade ${depName} to ${depVersion}`;
+  let prBody = `
+  ### TL&DR;
+  
+  - Upgrade ${depName} to ${depVersion}  `;
+
+  // read pr template and substitute description
+  try {
+    const withPRTemplate = await fs.pathExists(prTemplatePath);
+    if (withPRTemplate) {
+      const prTemplate = await fs.readFile(prTemplatePath);
+      const prTemplateContent = prTemplate.toString();
+      prBody = prTemplateContent.replace(`### TL&DR;\n`, prBody);
+      prBody = prBody.replaceAll(`[ ]`, `[x]`);
+    }
+  } catch (error) {
+    echo`Wasn't able to read PR template`;
+  }
+
+  const prURL = await $`gh pr create --title ${prTitle} --body ${prBody}`;
+
+  return prURL;
 }

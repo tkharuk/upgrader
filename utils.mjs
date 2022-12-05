@@ -1,9 +1,20 @@
+/**
+ * @param {{
+ * depName: string,
+ * depVersion: string,
+ * }} configs
+ */
 export async function updatePackage({ depName, depVersion }) {
-  await $`yarn upgrade ${depName}@${depVersion}`;
-  // await fs.writeFile("./README.md", `${depName}@${depVersion}`); // TODO: remove
+  await $`yarn upgrade ${depName.trim()}@${depVersion.trim()}`;
 }
 
-export async function prepareBranch({ branchName, depName }) {
+/**
+ * @param {{
+ * branchName: string,
+ * depName?: string,
+ * }} configs
+ */
+export async function prepareBranch({ branchName, depName = "" }) {
   // stash changes if any
   const gitChanges = await $`git status --porcelain`;
   const isGitDirty = !!gitChanges.toString().trim().length;
@@ -20,40 +31,46 @@ export async function prepareBranch({ branchName, depName }) {
   await $`git checkout ${branchName}`;
 }
 
-export async function pushUpdates({ branchName, depName, depVersion }) {
-  const commitMessage = `chore: update ${depName} to ${depVersion}`;
+/**
+ *
+ * @param {{
+ * branchName: string,
+ * commitMessage?: string,
+ * depName?: string,
+ * depVersion?: string,
+ * }} configs
+ */
+export async function pushUpdates({
+  branchName,
+  commitMessage = "",
+  depName = "",
+  depVersion = "",
+}) {
+  const depCommitMessage = `chore: update ${depName} to ${depVersion}`;
 
   await $`git add .`;
-  await $`git commit -am ${commitMessage}`;
+  await $`git commit -am ${commitMessage || depCommitMessage}`;
   await $`git push -u --porcelain origin ${branchName}`;
   await $`git status`;
 }
 
-export async function createPR({ depName, depVersion }) {
+export async function getPRTemplate() {
   const prTemplatePath = ".github/pull_request_template.md";
 
-  // create PR with title and body
-  const prTitle = `Upgrade ${depName} to ${depVersion}`;
-  let prBody = `
-  ### TL&DR;
-  
-  - Upgrade ${depName} to ${depVersion}  `;
-
-  // read pr template and substitute description
   try {
     const withPRTemplate = await fs.pathExists(prTemplatePath);
     if (withPRTemplate) {
       const prTemplate = await fs.readFile(prTemplatePath);
       const prTemplateContent = prTemplate.toString();
-      prBody = prTemplateContent.replace(`### TL&DR;\n`, prBody);
+      return prTemplateContent;
+    } else {
+      echo`PR template is not found at ${prTemplatePath}`;
+      return "";
     }
   } catch (error) {
     echo`Wasn't able to read PR template`;
+    return "";
   }
-
-  const prURL = await $`gh pr create --title ${prTitle} --body ${prBody}`;
-
-  return prURL;
 }
 
 export async function useNvm() {
