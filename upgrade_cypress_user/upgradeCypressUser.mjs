@@ -7,7 +7,7 @@ import {
   getPRTemplate,
   prepareBranch,
   pushUpdates,
-} from "./utils.mjs";
+} from "../utils.mjs";
 
 const config = {
   appName: "owners-reports",

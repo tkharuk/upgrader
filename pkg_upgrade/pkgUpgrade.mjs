@@ -7,12 +7,12 @@ import {
   prepareBranch,
   updatePackage,
   pushUpdates,
-} from "./utils.mjs";
+} from "../utils.mjs";
 
 const config = {
-  appName: "",
-  depName: "",
-  depVersion: "",
+  appName: "owners-reports",
+  depName: "@guestyci/transaction-modals",
+  depVersion: "0.2.75",
   onAfterPR: () => $`yarn deployci --testOnly --cluster=production`,
 };
 
@@ -74,7 +74,7 @@ Status: ${chalk.gray("already upgraded")}
       process.exit(0);
     }
 
-    // NOT UPDATED
+    // needs an UPDATE flow
     await checkGithubAuth();
 
     await useNvm();

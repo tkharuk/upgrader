@@ -54,6 +54,14 @@ export async function pushUpdates({
   await $`git status`;
 }
 
+/**
+ * creates draft PR
+ * @param {{ prTitle: string, prBody: string, }} configs
+ */
+export async function createGhPR({ prTitle, prBody }) {
+  return await $`gh pr create --draft --title ${prTitle} --body ${prBody}`;
+}
+
 export async function getPRTemplate() {
   const prTemplatePath = ".github/pull_request_template.md";
 
@@ -87,4 +95,14 @@ export async function useNvm() {
 
 export async function checkGithubAuth() {
   $`gh auth status`;
+}
+
+/**
+ * changes directory to guesty app
+ * @param {string} appName
+ */
+export async function goToApp(appName) {
+  const appPath = `../${appName}`.replace("guestyorg/", "");
+
+  cd(appPath);
 }
