@@ -6,4 +6,4 @@
 - `brew install gh`
 - `gh auth login`
 - adjust config in `index.mjs`
-- `node index.mjs` to run the upgrade+pr creation
+- `node ciJqUpgrade/index.mjs` to run the specific upgrade script + draft pr creation
