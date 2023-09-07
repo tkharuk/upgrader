@@ -15,9 +15,9 @@ export async function upgradeJqOrb() {
   await fs.writeFile(ciConfigPath, updated);
 
   echo`
-    ========================================================
-    CircleCI config updated
-    ========================================================`;
+  ========================================================
+  ${chalk.green("CircleCI config updated")}
+  ========================================================`;
 }
 
 export async function createPR() {
@@ -29,7 +29,13 @@ export async function createPR() {
 - Update JQ orb  \n`;
 
   const prBody = prTemplate
-    ? prTemplate.replace(`### TL&DR;\n`, prTLDR)
+    ? prTemplate
+        .replace(`### TL&DR;\n`, prTLDR)
+        .replaceAll("[ ]", "[x]")
+        .replace("### Description", "")
+        .replace("XXXXXXXXXXXX", "")
+        .replace("### Images", "")
+        .replace("![XXX](url)", "")
     : prTLDR;
 
   echo`${prBody}`;

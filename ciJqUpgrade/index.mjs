@@ -12,8 +12,9 @@ import {
 import { upgradeJqOrb, createPR } from "./main.mjs";
 
 const config = {
-  appName: "owners-reports",
-  branchName: "",
+  appName: "business-models-page",
+  branchName: "jq-orb-upgrade",
+  onBeforePush: () => $`yarn`,
   onAfterPR: () => $`yarn deployci --testOnly --cluster=production`,
 };
 

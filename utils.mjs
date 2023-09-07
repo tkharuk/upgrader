@@ -1,3 +1,6 @@
+#!/usr/bin/env zx
+import "zx/globals";
+
 /**
  * @param {{
  * depName: string,
@@ -15,6 +18,17 @@ export async function updatePackage({ depName, depVersion }) {
  * }} configs
  */
 export async function prepareBranch({ branchName, depName = "" }) {
+  if (!branchName && !depName) {
+    throw new Error(
+      `branchName and depName are missing. Please provide at least one of them`
+    );
+  }
+
+  echo`
+  ========================================================
+  Preparing branch: ${chalk.cyan(branchName)}
+  ========================================================`;
+
   // stash changes if any
   const gitChanges = await $`git status --porcelain`;
   const isGitDirty = !!gitChanges.toString().trim().length;
