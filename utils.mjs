@@ -45,6 +45,10 @@ export async function prepareBranch({ branchName, depName = "" }) {
   await $`git checkout ${branchName}`;
 }
 
+export async function checkoutMaster() {
+  await $`git checkout master`;
+}
+
 /**
  *
  * @param {{
@@ -74,6 +78,22 @@ export async function pushUpdates({
  */
 export async function createGhPR({ prTitle, prBody }) {
   return await $`gh pr create --draft --title ${prTitle} --body ${prBody}`;
+}
+
+export async function getPRBody({ tldrSection }) {
+  const prTemplate = await getPRTemplate();
+
+  const prBody = prTemplate
+    ? prTemplate
+        .replace(`### TL&DR;\n`, tldrSection)
+        .replaceAll("[ ]", "[x]")
+        .replace("### Description", "")
+        .replace("XXXXXXXXXXXX", "")
+        .replace("### Images", "")
+        .replace("![XXX](url)", "")
+    : tldrSection;
+
+  return prBody;
 }
 
 export async function getPRTemplate() {

@@ -10,11 +10,11 @@ import {
   checkoutMaster,
 } from "../utils.mjs";
 
-import { upgradeJqOrb, createPR } from "./main.mjs";
+import { upgradeCypress, createPR } from "./main.mjs";
 
 const config = {
-  appName: "reservation-page",
-  branchName: "cypress-upgrade-v13",
+  appName: "business-models-page",
+  branchName: "jq-orb-upgrade",
   onBeforePush: () => $`yarn`,
   onAfterPR: () => $`yarn deployci --testOnly --cluster=production`,
 };
@@ -46,27 +46,20 @@ async function upgradeRepository(configs) {
 
   try {
     await goToApp(appName);
-
     await checkGithubAuth();
-
     await useNvm();
-
     await prepareBranch({ branchName });
 
-    await upgradeJqOrb(); // main upgrade
+    await upgradeCypress(); // main upgrade
 
     await onBeforePush();
-
     await pushUpdates({
       branchName,
       commitMessage: "chore: updatre jq orb",
     });
-
     const prURL = await createPR();
-
     await onAfterPR();
-
-    checkoutMaster();
+    await checkoutMaster();
 
     echo`
     ========================================================
