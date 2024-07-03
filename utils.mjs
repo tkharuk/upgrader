@@ -9,6 +9,11 @@ import "zx/globals";
  */
 export async function updatePackage({ depName, depVersion }) {
   await $`yarn upgrade ${depName.trim()}@${depVersion.trim()}`;
+
+  echo`
+  ========================================================
+  ${chalk.green(depName + " upgraded to " + depVersion)}
+  ========================================================`;
 }
 
 /**
