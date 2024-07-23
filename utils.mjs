@@ -23,10 +23,16 @@ export async function updatePackage({ depName, depVersion }) {
  * }} configs
  */
 export async function prepareBranch({ branchName, depName = "" }) {
-  if (!branchName && !depName) {
+  if (!branchName || !depName) {
     throw new Error(
       `branchName and depName are missing. Please provide at least one of them`
     );
+  }
+
+  // check if branch exists and throw error if it does
+  const branchExists = await $`git branch --list ${branchName}`;
+  if (branchExists.toString().trim().length) {
+    throw new Error(`${chalk.red(`Branch "${branchName}" already exists`)}`);
   }
 
   echo`
@@ -91,6 +97,7 @@ export async function getPRBody({ tldrSection }) {
   const prBody = prTemplate
     ? prTemplate
         .replace(`### TL&DR;\n`, tldrSection)
+        .replace(`### How to open a PR\n`, tldrSection)
         .replaceAll("[ ]", "[x]")
         .replace("### Description", "")
         .replace("XXXXXXXXXXXX", "")
@@ -141,7 +148,22 @@ export async function checkGithubAuth() {
  * @param {string} appName
  */
 export async function goToApp(appName) {
-  const appPath = `../${appName}`.replace("guestyorg/", "");
+  const appPath = `../${appName}`.replace("guestyorg/", "").trim();
 
   cd(appPath);
+}
+
+/**
+ * @param {{
+ *   depName: string,
+ * }} configs
+ *
+ * @returns string
+ */
+export function getBranchName({ depName }) {
+  const branchName = `feature/update-${depName}`
+    .replace("@", "")
+    .replace("guestyci/", "guestyci-");
+
+  return branchName;
 }

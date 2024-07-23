@@ -8,6 +8,7 @@ import {
   pushUpdates,
   goToApp,
   checkoutMaster,
+  getBranchName,
 } from "../utils.mjs";
 
 /**
@@ -27,12 +28,14 @@ export async function upgradeRepository(configs) {
   const {
     appName,
     depName,
-    branchName,
+    branchName: branchNameFromConfig,
     main,
     createPR,
     onBeforePush = async () => {},
     onAfterPR = async () => {},
   } = configs;
+
+  let branchName = branchNameFromConfig || getBranchName(configs);
 
   echo`
   ========================================================

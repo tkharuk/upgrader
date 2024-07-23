@@ -19,11 +19,11 @@ const config = {
   appName: "",
   depName: "",
   depVersion: "",
-  branchName: "",
+  branchName: "", // will be set automatically if empty
   main: main,
-  onBeforePush: () => $`yarn`,
+  onBeforePush: () => $`nvm use && yarn`,
   createPR: createPR,
-  onAfterPR: () => $`yarn deployci --testOnly --cluster=production`,
+  onAfterPR: () => $`nvm use && yarn deployci --testOnly --cluster=production`,
 };
 
 // main upgrade function
